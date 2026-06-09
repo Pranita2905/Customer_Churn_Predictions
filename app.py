@@ -261,7 +261,8 @@ def predict():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-if _name_ == "_main_":
+if __name__ == "__main__":
+    app.run(debug=True)
     # Ensure standard binding to environment variable port for Render
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
