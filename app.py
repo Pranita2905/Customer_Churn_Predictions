@@ -4,221 +4,164 @@ import numpy as np
 
 app = Flask(__name__)
 
-# Load trained model
+# Load Model
 with open("modelN.pkl", "rb") as f:
     model = pickle.load(f)
 
 HTML = """
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction</title>
 
-<title>Customer Churn Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
 
-<style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
-}
-
-body{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:linear-gradient(135deg,#0f172a,#1e293b,#2563eb);
-    padding:20px;
-}
-
-.container{
-    width:100%;
-    max-width:1000px;
-    background:rgba(255,255,255,0.1);
-    backdrop-filter:blur(15px);
-    border-radius:20px;
-    padding:35px;
-    box-shadow:0 8px 32px rgba(0,0,0,.3);
-    color:white;
-}
-
-.header{
-    text-align:center;
-    margin-bottom:25px;
-}
-
-.header h1{
-    font-size:2.3rem;
-}
-
-.header p{
-    color:#dbeafe;
-    margin-top:10px;
-}
-
-.form-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-}
-
-.input-box{
-    position:relative;
-}
-
-.input-box i{
-    position:absolute;
-    left:15px;
-    top:15px;
-    color:#2563eb;
-}
-
-input,select{
-    width:100%;
-    padding:12px 12px 12px 42px;
-    border:none;
-    border-radius:10px;
-    outline:none;
-}
-
-.btn{
-    width:100%;
-    margin-top:20px;
-    padding:14px;
-    border:none;
-    border-radius:10px;
-    background:#2563eb;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.btn:hover{
-    background:#1d4ed8;
-}
-
-.result{
-    margin-top:25px;
-    padding:20px;
-    border-radius:12px;
-    text-align:center;
-    font-size:24px;
-    font-weight:bold;
-    background:rgba(255,255,255,0.12);
-}
-
-.footer{
-    margin-top:25px;
-    text-align:center;
-    color:#cbd5e1;
-}
-
-@media(max-width:768px){
-    .form-grid{
-        grid-template-columns:1fr;
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial, sans-serif;
     }
-}
 
-</style>
+    body{
+        background:linear-gradient(135deg,#0f172a,#1e293b,#2563eb);
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        padding:20px;
+    }
+
+    .container{
+        width:100%;
+        max-width:1000px;
+        background:white;
+        border-radius:20px;
+        padding:30px;
+        box-shadow:0px 10px 30px rgba(0,0,0,0.2);
+    }
+
+    h1{
+        text-align:center;
+        color:#2563eb;
+        margin-bottom:10px;
+    }
+
+    p{
+        text-align:center;
+        color:gray;
+        margin-bottom:20px;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:15px;
+    }
+
+    input{
+        width:100%;
+        padding:12px;
+        border:1px solid #ddd;
+        border-radius:10px;
+        font-size:15px;
+    }
+
+    button{
+        width:100%;
+        margin-top:20px;
+        padding:14px;
+        border:none;
+        border-radius:10px;
+        background:#2563eb;
+        color:white;
+        font-size:18px;
+        cursor:pointer;
+    }
+
+    button:hover{
+        background:#1d4ed8;
+    }
+
+    .result{
+        margin-top:20px;
+        padding:15px;
+        text-align:center;
+        font-size:22px;
+        font-weight:bold;
+        border-radius:10px;
+        background:#f1f5f9;
+    }
+
+    @media(max-width:768px){
+        .grid{
+            grid-template-columns:1fr;
+        }
+    }
+
+    </style>
 </head>
 
 <body>
 
 <div class="container">
 
-<div class="header">
-<h1><i class="fas fa-users"></i> Customer Churn Prediction</h1>
-<p>Machine Learning Powered Customer Retention Analytics</p>
-</div>
+    <h1>Customer Churn Prediction</h1>
+    <p>Machine Learning Powered Customer Analytics</p>
 
-<form method="POST">
+    <form method="POST">
 
-<div class="form-grid">
+        <div class="grid">
 
-<div class="input-box">
-<i class="fas fa-id-card"></i>
-<input type="number" name="customer_id" placeholder="Customer ID" required>
-</div>
+            <input type="number" name="customer_id"
+            placeholder="Customer ID" required>
 
-<div class="input-box">
-<i class="fas fa-user"></i>
-<input type="number" name="age" placeholder="Age" required>
-</div>
+            <input type="number" name="age"
+            placeholder="Age" required>
 
-<div class="input-box">
-<i class="fas fa-venus-mars"></i>
-<select name="gender">
-<option value="0">Male</option>
-<option value="1">Female</option>
-<option value="2">Other</option>
-</select>
-</div>
+            <input type="number" name="gender"
+            placeholder="Gender Encoded Value" required>
 
-<div class="input-box">
-<i class="fas fa-city"></i>
-<input type="number" name="city" placeholder="City Encoded Value" required>
-</div>
+            <input type="number" name="city"
+            placeholder="City Encoded Value" required>
 
-<div class="input-box">
-<i class="fas fa-calendar"></i>
-<input type="number" name="tenure_months" placeholder="Tenure Months" required>
-</div>
+            <input type="number" name="tenure_months"
+            placeholder="Tenure Months" required>
 
-<div class="input-box">
-<i class="fas fa-dollar-sign"></i>
-<input type="number" step="0.01" name="avg_order_value" placeholder="Average Order Value" required>
-</div>
+            <input type="number" step="0.01"
+            name="avg_order_value"
+            placeholder="Average Order Value" required>
 
-<div class="input-box">
-<i class="fas fa-cart-shopping"></i>
-<input type="number" name="total_orders" placeholder="Total Orders" required>
-</div>
+            <input type="number" name="total_orders"
+            placeholder="Total Orders" required>
 
-<div class="input-box">
-<i class="fas fa-clock"></i>
-<input type="number" name="last_purchase_days_ago" placeholder="Last Purchase Days Ago" required>
-</div>
+            <input type="number"
+            name="last_purchase_days_ago"
+            placeholder="Last Purchase Days Ago" required>
 
-<div class="input-box">
-<i class="fas fa-headset"></i>
-<input type="number" name="support_tickets" placeholder="Support Tickets" required>
-</div>
+            <input type="number"
+            name="support_tickets"
+            placeholder="Support Tickets" required>
 
-<div class="input-box">
-<i class="fas fa-crown"></i>
-<select name="subscription_type">
-<option value="0">Basic</option>
-<option value="1">Standard</option>
-<option value="2">Premium</option>
-</select>
-</div>
+            <input type="number"
+            name="subscription_type"
+            placeholder="Subscription Type Encoded Value" required>
 
-</div>
+        </div>
 
-<button class="btn" type="submit">
-<i class="fas fa-chart-line"></i>
- Predict Churn
-</button>
+        <button type="submit">
+            Predict Customer Churn
+        </button>
 
-</form>
+    </form>
 
-{% if prediction %}
-<div class="result">
-{{ prediction }}
-</div>
-{% endif %}
-
-<div class="footer">
-Developed by Pranita | Data Analyst & Machine Learning Project
-</div>
+    {% if prediction %}
+    <div class="result">
+        {{ prediction }}
+    </div>
+    {% endif %}
 
 </div>
 
@@ -259,4 +202,4 @@ def home():
     )
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(debug=True)
