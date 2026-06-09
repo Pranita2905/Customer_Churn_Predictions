@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 from flask import Flask, request, jsonify, render_template_string
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # Load the Naive Bayes Model securely
 MODEL_PATH = "Naive_Bayes_Model.pkl"
@@ -262,7 +262,6 @@ def predict():
         return jsonify({"success": False, "error": str(e)}), 400
 
 if __name__ == "__main__":
-    app.run(debug=True)
     # Ensure standard binding to environment variable port for Render
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
