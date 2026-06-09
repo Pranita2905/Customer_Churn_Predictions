@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, render_template_string
 app = Flask(_name_)
 
 # Load the Naive Bayes Model securely
-MODEL_PATH = "Naive_Bayes_Model.pkl"
+MODEL_PATH = "ModelN.pkl"
 
 try:
     with open(MODEL_PATH, "rb") as f:
